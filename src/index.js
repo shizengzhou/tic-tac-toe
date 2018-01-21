@@ -43,7 +43,8 @@ class Game extends React.Component {
         desc: 'Game start'
       }],
       stepNumber: 0,
-      xIsNext: true
+      xIsNext: true,
+      sort: false
     }
   }
 
@@ -64,19 +65,23 @@ class Game extends React.Component {
     this.setState({
       history: history.concat([{ squares: squares, desc: desc }]),
       stepNumber: history.length,
-      xIsNext: !this.state.xIsNext
+      xIsNext: !this.state.xIsNext,
+      sort: false
     });
   }
 
   jumpTo(step) {
     this.setState({
       stepNumber: step,
-      xIsNext: (step % 2) === 0
+      xIsNext: (step % 2) === 0,
+      sort: false
     });
   }
 
   render() {
-    const history = this.state.history;
+    const history = this.state.sort ?
+      this.state.history.reverse() :
+      this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
 
@@ -103,10 +108,19 @@ class Game extends React.Component {
     return (
       <div className="game">
         <div className="game-board">
-          <Board squares={current.squares} onClick={(i) => this.handleClick(i)} />
+          <Board squares={current.squares}
+            onClick={(i) => this.handleClick(i)} />
         </div>
         <div className="game-info">
           <div>{status}</div>
+          <div>
+            <button onClick={() => this.setState({
+              stepNumber: history.length - 1 - this.state.stepNumber,
+              sort: true
+            })}>
+              sort
+            </button>
+          </div>
           <ol>{moves}</ol>
         </div>
       </div>
