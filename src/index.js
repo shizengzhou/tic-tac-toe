@@ -3,17 +3,27 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 function Square(props) {
-  return (
-    <button className="square" onClick={props.onClick}>
-      {props.value}
-    </button>
-  );
+  if (props.highlight) {
+    return (
+      <button className="square" onClick={props.onClick}
+        style={{ color: '#0f0' }}>
+        {props.value}
+      </button>
+    );
+  } else {
+    return (
+      <button className="square" onClick={props.onClick}>
+        {props.value}
+      </button>
+    );
+  }
 }
 
 class Board extends React.Component {
   renderSquare(i) {
     return (
       <Square key={i} value={this.props.squares[i]}
+        highlight={this.props.highlights[i]}
         onClick={() => this.props.onClick(i)}
       />
     );
@@ -84,6 +94,7 @@ class Game extends React.Component {
       this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
+    let highlights = Array(9).fill(false);
 
     const moves = history.map((step, move) => {
       return (
@@ -100,7 +111,11 @@ class Game extends React.Component {
 
     let status = '';
     if (winner) {
-      status = 'Winner: ' + winner;
+      status = 'Winner: ' + winner.winner;
+      const [a, b, c] = winner.line;
+      highlights[a] = true;
+      highlights[b] = true;
+      highlights[c] = true;
     } else {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
     }
@@ -109,6 +124,7 @@ class Game extends React.Component {
       <div className="game">
         <div className="game-board">
           <Board squares={current.squares}
+            highlights={highlights}
             onClick={(i) => this.handleClick(i)} />
         </div>
         <div className="game-info">
@@ -146,7 +162,7 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return { winner: squares[a], line: [a, b, c] };
     }
   }
   return null;
