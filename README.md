@@ -1,7 +1,5 @@
 # tic-tac-toe
 
-Follow React offical tutorial, build the tic-tac-toe.
-
 ## Improvements
 
 1. Display the location for each move in the format (col, row) in the move history list.
